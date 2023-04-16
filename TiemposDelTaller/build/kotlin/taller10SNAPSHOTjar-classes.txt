@@ -1,0 +1,1 @@
+C:\Users\azaha\Desktop\ejercicioDePspTaller\taller\build\classes\kotlin\main\MainKt$main$Coche.class;C:\Users\azaha\Desktop\ejercicioDePspTaller\taller\build\classes\kotlin\main\MainKt$main$Mecanico.class;C:\Users\azaha\Desktop\ejercicioDePspTaller\taller\build\classes\kotlin\main\MainKt.class
