@@ -53,6 +53,54 @@ fun main(args: Array<String>) {
     println("Secuencial precios totales :" + precioTotalSecuencial)
 
 
+    //tiempo paralelo con hilos sin funturos y sin Atomick interger
+
+    //tiempo con en paralelo con hilos pero sin devolver
+
+    var precioTotalHilosSinAtomick = 0
+    var precioDePrimerTrabajadorHilo = 0
+    var precioDeSegundoTrabajadorHilo = 0
+    var precioDetercerTrabajadorHilo = 0
+    var tiempoHilosSinAtomik = measureTimeMillis {
+
+        var poll = Executors.newFixedThreadPool(3)
+
+        val tiempoInicio = System.currentTimeMillis()
+        poll.submit {
+            var preciomecanico1 = 0
+            mecanico1.listaCoches.forEach {
+                Thread.sleep(it.tReparacion.toLong())
+                preciomecanico1 = preciomecanico1 + it.precio
+            }
+            precioDePrimerTrabajadorHilo = preciomecanico1
+        }
+        poll.submit {
+
+            var preciomecanico2 = 0
+            mecanico2.listaCoches.forEach {
+                Thread.sleep(it.tReparacion.toLong())
+                preciomecanico2 = preciomecanico2 + it.precio
+            }
+            precioDeSegundoTrabajadorHilo = preciomecanico2
+        }
+        poll.submit {
+            var preciomecanico3 = 0
+            mecanico3.listaCoches.forEach {
+                Thread.sleep(it.tReparacion.toLong())
+                preciomecanico3 = preciomecanico3 + it.precio
+            }
+            precioDetercerTrabajadorHilo = preciomecanico3
+        }
+
+        poll.shutdown()
+        poll.awaitTermination(2000L, TimeUnit.MILLISECONDS)
+    }
+    println("Hilos sin AtomickInterger tarda: " + tiempoHilosSinAtomik)
+    precioTotalHilosSinAtomick = precioDePrimerTrabajadorHilo +precioDeSegundoTrabajadorHilo + precioDetercerTrabajadorHilo
+    println("Hilos sin AtomickInterger precio total: " + precioTotalHilosSinAtomick)
+
+
+
     //tiempo con en paralelo con hilos pero sin devolver
 
     var precioTotalHilos = AtomicInteger(0)
