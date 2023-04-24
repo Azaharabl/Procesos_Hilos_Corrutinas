@@ -21,3 +21,10 @@ En cada prollecto Expongo un Readme con una explicación más detallada.
     - Secuencias
     - Hilos con el uso de un poll de 7 hilos
     - Futuros con un poll de / hilos y el uso de Callable
+ ## Comandos Linux Windows
+ - Ejecicio que según el sistema operativo realiza comandos y muestra por pantalla los resultados:
+    - cd
+    - java -jar
+    - dir
+    - type
+    - xcopy
