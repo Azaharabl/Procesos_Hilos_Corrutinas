@@ -9,12 +9,13 @@ class TallerSyncronized(var aparcamientos: Int = 5, cochesPermitidosAlDia : Int 
     private var cochesAAreglarEnUnDia = cochesPermitidosAlDia
     private var tallerAbierto = true
 
-    @Synchronized
-    fun putUnCocheEnElTaller(coche: Coche):Boolean {
+    private val lock = java.lang.Object()   //para realizar el Sincroniced en kotlin
+
+    fun putUnCocheEnElTaller(coche: Coche):Boolean = synchronized(lock) {
         println("entra en el put del taller")
 
             while (bufer.size >= aparcamientos) {
-
+                lock.wait()
             }
         println("el taller NO  esta lleno")
             if (cochesMetidos == cochesAAreglarEnUnDia ){
@@ -25,23 +26,28 @@ class TallerSyncronized(var aparcamientos: Int = 5, cochesPermitidosAlDia : Int 
                 cochesMetidos++
             }
 
+        lock.notifyAll()
         return  tallerAbierto
     }
 
     @Synchronized
-    fun getUnCocheDelTaller(): Coche? {
+    fun getUnCocheDelTaller(): Coche? = synchronized(lock){
 
         if(!tallerAbierto && bufer.size <= 0){
             println("taller cerrado y vacio")
+            lock.notifyAll()
             return null
         }
             while (bufer.size == 0) {
+                lock.wait()
                 if(!tallerAbierto && bufer.size <= 0){
                     println("taller cerrado y vacio")
+                    lock.notifyAll()
                     return null
                 }
             }
             var coche = bufer.removeAt(0)   //para que sea una cola y sea equtativo con los coches
+        lock.notifyAll()
             return coche
 
     }

@@ -14,14 +14,11 @@ class MecanicoSyncronized(taller : TallerSyncronized, descanso : Pair<Long, Long
     var totalCobrado = 0L
     override fun call(): Long {
         while (trabajando){
-            //tomarDescanso
             println("Mecanico : descanso")
             sleep(Random.nextLong(tiempoDeDescanso.first, tiempoDeDescanso.second))
             println("Mecanico : intento cojer coche del taller")
-            //areglar y vr si sigue trabajando
             var coche : Coche? = taller.getUnCocheDelTaller()
             println("Mecanico : cojido coche del taller")
-            //si obtiene nullo es que el taller esta cerrado y no hay coches te pareas
             if (coche== null) {
                 trabajando = false
             }else{

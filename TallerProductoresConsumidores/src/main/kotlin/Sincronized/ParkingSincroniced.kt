@@ -3,26 +3,28 @@ package Sincronized
 import Coche
 
 class ParkingSincroniced(var aparcamientos: Int = 200) {
+
     private val maximo = aparcamientos
+    var bufer = ArrayList<Coche>()
 
-     var bufer = ArrayList<Coche>()
+    private val lock = java.lang.Object()   //para realizar el Sincroniced en kotlin
 
-    @Synchronized
-    fun putEnParquin(coche: Coche) {
 
-        if(bufer.size==200){
-            println("Esta lleno el parquin, no poner mas")
-        }else{
-            bufer.add(coche)
+    fun putEnParquin(coche: Coche) = synchronized(lock) {
+        while (bufer.size == maximo){
+            lock.wait()
         }
+        bufer.add(coche)
+        lock.notifyAll()
     }
 
-    @Synchronized
-    fun getDeParquin(): Coche {
-        while (bufer.size==0){
 
+    fun getDeParquin(): Coche =  synchronized(lock) {
+        while (bufer.size==0){
+            lock.wait()
         }
         var value = bufer.removeAt(bufer.size - 1)
+        lock.notifyAll()
         return value
     }
 }

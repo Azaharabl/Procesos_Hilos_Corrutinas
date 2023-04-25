@@ -18,16 +18,27 @@ import kotlin.system.measureTimeMillis
 fun main(args: Array<String>) {
 
     var s = measureTimeMillis { tallerSecuencial()  }
-    var r =  measureTimeMillis { tallerConHilosYMonitorConRentrantLock()  }
-    var b = measureTimeMillis { tallerConBlokindeque() }
+    println("tiempo secuencial : " + s )
 
-println("\n ")
+
+   var r =  measureTimeMillis { tallerConHilosYMonitorConRentrantLock()  }
+    println("tiempo Rentran loock : " + r)
+
+
+    var b = measureTimeMillis { tallerConBlokindeque() }
+    println("tiempo Bloking y atomick : " + b )
+
+
+    var y = measureTimeMillis { tallerConHilosYSyncroniced()  }
+    println("tiempo Syncronized : " + y )
+
+
+
+
     println("tiempo secuencial : " + s )
     println("tiempo Rentran loock : " + r)
     println("tiempo Bloking y atomick : " + b )
-
-    //con Syncronized no es un modo equitativo
-    // println("tiempo Syncroniced : " + measureTimeMillis {  tallerConHilosYSyncroniced() })
+    println("tiempo Syncronized : " + y )
 
 
 
@@ -59,7 +70,7 @@ fun tallerConHilosYSyncroniced() {
     repeat(200) {
             parquin.putEnParquin(Coche(Random.nextLong(cuantoCuestaELCoche.first, cuantoCuestaELCoche.second)))
     }
-    println(parquin.bufer.size)
+    println("coches metidos en el parquin" + parquin.bufer.size)
 
 
     //creamos las gruas que son 2  y los mecanicos y los ponemos a ejecutar a traves del poll
@@ -80,7 +91,11 @@ fun tallerConHilosYSyncroniced() {
     var futuros = poll.invokeAll(mecanicos)
     var resultadoTotal = futuros.map { it.get() }.sum()
     println("las ganancias obtenidas con los futures son : "+ resultadoTotal)
+    if (!poll.isTerminated){
+        Thread.sleep(1)
+    }
     poll.shutdown()
+
 
 
 }
@@ -94,6 +109,7 @@ fun tallerConHilosYMonitorConRentrantLock() {
     var cuantoTardanEnRepararLosmecanicos = Pair(200L, 400L)
     var cuantoDescansasLosMecanicos = Pair(200L, 400L)
     var cuantoCuestaELCoche = Pair(300L, 400L)
+    var hilosAcabados = AtomicInteger(0)
 
     var poll = Executors.newFixedThreadPool(7)
     val parquin = Parquin()
@@ -103,6 +119,7 @@ fun tallerConHilosYMonitorConRentrantLock() {
    repeat(200) {
         poll.submit {
             parquin.putEnParquin(Coche(Random.nextLong(cuantoCuestaELCoche.first, cuantoCuestaELCoche.second)))
+            hilosAcabados.addAndGet(1)
         }
     }
 
@@ -110,18 +127,30 @@ fun tallerConHilosYMonitorConRentrantLock() {
     repeat(2) {
         poll.submit {
             GruaEntrada(parquin,taller,cuantoTardanLasGruas).run()
+            hilosAcabados.addAndGet(1)
         }
     }
     //creamos los mecanicos
     var mecanicos = ArrayList<Mecanico> ()
-    repeat(3) { mecanicos.add(Mecanico(taller, cuantoDescansasLosMecanicos,cuantoTardanEnRepararLosmecanicos)) }
+    repeat(3) { mecanicos.add(Mecanico(taller, cuantoDescansasLosMecanicos,cuantoTardanEnRepararLosmecanicos))
+    hilosAcabados.addAndGet(1)
+    }
 
 
     var futuros = poll.invokeAll(mecanicos)
+    futuros.forEach {it.get()}
+    while (!poll.isTerminated){
+        Thread.sleep(1)
+        println("esperando a que termine el poll")
+        println("hilos cabados son "+ hilosAcabados.get())
+        if (hilosAcabados.get()==205){
+            poll.shutdownNow()
+        }
+    }
     var resultadoTotal = futuros.map { it.get() }.sum()
+
     println("las ganancias obtenidas con los futures son : "+ resultadoTotal)
     poll.shutdown()
-    System.exit(0)
 
 }
 
