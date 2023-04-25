@@ -20,6 +20,7 @@ En cada prollecto Expongo un Readme con una explicación más detallada.
 - Ejercicio donde medimos los tiempos que se tardan en hacer las mismas tareas de obtener medias y sumarlas con:
     - Secuencias
     - Hilos con el uso de un poll de 7 hilos
+    - Syncronice
     - Futuros con un poll de / hilos y el uso de Callable
  ## Comandos Linux Windows
  - Ejecicio que según el sistema operativo realiza comandos y muestra por pantalla los resultados:
