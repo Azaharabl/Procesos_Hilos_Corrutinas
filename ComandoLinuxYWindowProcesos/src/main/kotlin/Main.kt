@@ -337,12 +337,14 @@ fun realizarComandosParaWindows() {
 fun realizarConComandosDeLinuxEnWindows() {
 
 
+
         //para ejecutar en windows comandos de linux
         var comandInit = "wsl.exe"
 
         println("ir a un diresctorio: cd")
 
-        val commandCD = "wsl.exe cd C:\\Users\\MiUsuario\\Documents"
+        val commandCD = "wsl.exe cd /mnt/"
+        println(commandCD)
         val processCD = ProcessBuilder(commandCD.split(" ")).start()
         var okCD = processCD.waitFor()
         if (okCD == 0){
@@ -360,7 +362,7 @@ fun realizarConComandosDeLinuxEnWindows() {
 
 
         println("\n" + "\n" + "  ejecutar un jar: java -jar para ello necesitamos un archivo.jar si no es así imprimimos el error")
-        val commandJar = "wsl.exe  java -jar MiArchivo.jar"
+        val commandJar = "wsl.exe java -jar MiArchivo.jar"
         val processJar = ProcessBuilder(commandJar.split(" ")).start()
         var okJar = processJar.waitFor()
         if (okJar == 0 ){
@@ -387,7 +389,7 @@ fun realizarConComandosDeLinuxEnWindows() {
 
         println("\n" + "\n" + " listar directorios: ls + path")
 
-        val commandDir = "wsl.exe  ls " + System.getProperty("user.dir")
+        val commandDir = "wsl.exe ls /mnt/c"
         val processDir = ProcessBuilder(commandDir.split(" ")).start()
         println(commandDir)
         var okLs =  processDir.waitFor()
@@ -413,8 +415,9 @@ fun realizarConComandosDeLinuxEnWindows() {
 
 
 
+
         println("\n" + "\n" + "cat ")
-        val commandType = "wsl.exe cat " + System.getProperty("user.dir") + File.separator + "build.gradle.kts"
+        val commandType = "wsl.exe cat /mnt/c/DumpStack.log.tmp"
         println(commandType)
         val processType = ProcessBuilder(commandType.split(" ")).start()
         var okCat = processType.waitFor()
@@ -434,7 +437,7 @@ fun realizarConComandosDeLinuxEnWindows() {
         println("\n" + "\n" + "cp ")
 
         val commandXcopy =
-            "wsl.exe cp" + System.getProperty("user.dir") + File.separator + "build.gradle.kts " + System.getProperty("user.dir") + File.separator + "build.gradlecopiado.kts"
+            "wsl.exe cp /mnt/c/DumpStack.log.tmp /mnt/c/DumpStack.log2.tmp"
         println(commandXcopy)
         val processXcopy = ProcessBuilder(commandXcopy.split(" ")).start()
         var okXcopy = processXcopy.waitFor()
@@ -450,35 +453,11 @@ fun realizarConComandosDeLinuxEnWindows() {
             resultXcopy.close()
         }
 
-
-        println(
-            "\n" +
-                    "\n" + "cp "
-        )
-
-        val commandXcopyDir =
-            "wsl.exe cp " + System.getProperty("user.dir") + File.separator + ".idea " + System.getProperty("user.dir") + File.separator + ".ideaCopy"
-        println(commandXcopyDir)
-        val processXcopyDir = ProcessBuilder(commandXcopyDir.split(" ")).start()
-        okXcopy = processXcopyDir.waitFor()
-        if(okXcopy==0){
-            println(" el proceso cp ha finalizado correctamnete")
-            var resultXcopy = BufferedReader(InputStreamReader(processXcopyDir.inputStream))
-            resultXcopy.readLines().forEach { println(it) }
-            resultXcopy.close()
-        }else{
-            println(" el proceso cp NO ha finalizado correctamnete")
-            var resultXcopy = BufferedReader(InputStreamReader(processXcopyDir.errorStream))
-            resultXcopy.readLines().forEach { println(it) }
-            resultXcopy.close()
-        }
-
-
         println("\n" + "\n" + "  greep ")
 
-        var textoABuscar = "version "
+        var textoABuscar = "c "
         val commandFind =
-            "wsl.exe greep " + textoABuscar + System.getProperty("user.dir") + File.separator + "build.gradle.kts "
+            "wsl.exe grep " + textoABuscar + "/mnt/"
         val processFind = ProcessBuilder(commandFind.split(" ")).start()
         var okFinf = processFind.waitFor()
         if (okFinf == 0 ){
@@ -487,12 +466,13 @@ fun realizarConComandosDeLinuxEnWindows() {
             resultFind.readLines().forEach { println(it) }
             resultFind.close()
         }else{
-            if (okFinf == 0 ){
-                println("el proceso greep ha terminado correctamente")
+
+                println("el proceso greep NO ha terminado correctamente")
                 var resultFind = BufferedReader(InputStreamReader(processFind.errorStream))
                 resultFind.readLines().forEach { println(it) }
                 resultFind.close()
-            }
+
         }
+
 
 }
