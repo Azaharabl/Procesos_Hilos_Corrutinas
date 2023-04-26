@@ -1,1 +1,1 @@
-C:\Users\azaha\Desktop\ejercicioDePspTaller\EjercicioDeProcesamientoDeMedias\build\classes\kotlin\main\MainKt.class
+C:\Users\azaha\Desktop\g\Procesos_Hilos_Corrutinas\EjercicioDeProcesamientoDeMedias\build\classes\kotlin\main\MainKt.class

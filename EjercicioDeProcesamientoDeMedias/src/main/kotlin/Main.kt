@@ -20,7 +20,7 @@ fun main(args: Array<String>) {
 
     var listS = ArrayList<Int>()
     lista.forEach { listS.add(it) }
-    realizacionSecuencial(listS)
+    //realizacionSecuencial(listS)
 
     var listH = ArrayList<Int>()
     lista.forEach { listH.add(it) }
@@ -28,7 +28,7 @@ fun main(args: Array<String>) {
 
     var listF = ArrayList<Int>()
     lista.forEach { listF.add(it) }
-    realizacionFuturos(listF)
+    //realizacionFuturos(listF)
 
 }
 
@@ -63,20 +63,17 @@ fun futures(lista: ArrayList<Int>) {
     var poll2 = Executors.newFixedThreadPool(7)
 
     var listaFuturos = ArrayList<Future<Double>>()
-    while (lista.isNotEmpty()){
-        //crear sublista con 10 objetos
-        var sublista = ArrayList<Int>()
-        while (sublista.size<10 && lista.isNotEmpty()){
-            sublista.add(lista.removeAt(0))
-        }
+    lista.windowed(10).forEach {
         listaFuturos.add(poll2.submit(
             Callable<Double> {
-                var media = sublista.average()
-                println("yo soy callable: mi sublista es:" + sublista + " y su media es: " + media)
+                var media = it.average()
+                println("yo soy callable: mi sublista es:" +it + " y su media es: " + media)
                 return@Callable media
             }
         ))
     }
+
+
 
     var listaMedias = ArrayList<Double>()
     for (futuro in listaFuturos) {
@@ -93,29 +90,22 @@ fun hilos(lista: ArrayList<Int>) {
 
 
     var mediasHilos = LinkedBlockingDeque<Double>() //aceden todos los hilos
-    var hilosEnProceso = AtomicInteger(0)   //aceden todos los hilos y el main
     var poll = Executors.newFixedThreadPool(7)
 
-    while (lista.isNotEmpty()){
-        //crear sublista con 10 objetos
-        var sublista = ArrayList<Int>()     //solo acede a ella el hilo principal
-        while (sublista.size<10 && lista.isNotEmpty()){
-            sublista.add(lista.removeAt(0))
-        }
-        hilosEnProceso.addAndGet(1)
+    lista.windowed(10).forEach {
         poll.submit{
-            var media = sublista.average()
-            println("yo soy hilo: mi sublista es:" + sublista + " y su media es: " +media )
+            var media = it.average()
+            println("yo soy hilo: mi sublista es:" + it + " y su media es: " +media )
             mediasHilos.add(media)
-            hilosEnProceso.addAndGet(-1)
         }
+    }
 
-    }
-    while (hilosEnProceso.get() > 0) {
-        sleep(0.1.toLong())
-        println("los hilos en proceso son = "+ hilosEnProceso.get() + "esperamos ")
-    }
     poll.shutdown()
+    while (!poll.isTerminated) {
+        sleep(1.toLong())
+        println("esperando ...")
+    }
+
     println("\n ")
     println("todas las medias son : " + mediasHilos)
     println("la suma de todas las medis es: "+ mediasHilos.sum())
@@ -128,14 +118,10 @@ fun secuencial(lista: ArrayList<Int>) {
 
         var medias = ArrayList<Double>()
 
-        while (lista.isNotEmpty()) {
-            //crear sublista con 10 objetos
-            var sublista = ArrayList<Int>()
-            while (sublista.size < 10 && lista.isNotEmpty()) {
-                sublista.add(lista.removeAt(0))
-            }
-            var media = sublista.average()
-            println("creamos sublista :" + sublista + " y su media es: " + media)
+        lista.windowed(10).forEach {
+
+            var media = it.average()
+            println("creamos sublista :" + it + " y su media es: " + media)
             medias.add(media)
         }
         println("\n ")
