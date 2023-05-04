@@ -2,6 +2,12 @@
 Distintos ejercicios realizados con Procesos, Hilos, Corrutinas y pools
 
 En cada prollecto Expongo un Readme con una explicación más detallada.
+## Canicas y corrutinas
+- Ejercicio donde vemos los distintos problemas que podemos tener al usar corrutinas acediendo a una seción crítica y como resolverlos.
+    - Varios productores un consumidor
+    - Varios consumidores un productor
+    - Varios productores y varios consumidores
+    - Tipos de chanels 
 
 ## Tiempos De Taller
 - Ejercicio donde medimos los tiempos que se tardan en hacer las mismas tareas ejecutadas con:
