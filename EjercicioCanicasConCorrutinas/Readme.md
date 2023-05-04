@@ -13,14 +13,14 @@ Realizaremos distintos ejercicios.
 
 
 
-Diferencias entre los distintos canales:
+### Diferencias entre los distintos canales:
 
-val rendezvousChannel = Channel<String>() -> 0  los elementos son enviados únicamente cuando un emisor y un receptor se encuentran.
-val bufferedChannel = Channel<String>(10) -> La capacidad del buffer de este Channel es de 10 elementos
-val conflatedChannel = Channel<String>(CONFLATED) ->siempre ofrece el último valor enviado al buffer, descartando los que no fueron recibidos por nadie.
-val unlimitedChannel = Channel<String>(UNLIMITED) -> Con este Channel, tenemos un buffer con capacidad ilimitada, lo que de la memoria
+- val rendezvousChannel = Channel<String>() -> 0  los elementos son enviados únicamente cuando un emisor y un receptor se encuentran.
+- val bufferedChannel = Channel<String>(10) -> La capacidad del buffer de este Channel es de 10 elementos
+- val conflatedChannel = Channel<String>(CONFLATED) ->siempre ofrece el último valor enviado al buffer, descartando los que no fueron recibidos por nadie.
+- val unlimitedChannel = Channel<String>(UNLIMITED) -> Con este Channel, tenemos un buffer con capacidad ilimitada, lo que de la memoria
 
-Pipelines:
+### Pipelines:
 Un pipeline es un patón donde una corrutina produce un conjunto de valores sobre un stream. 
 Otra corrutina (o varias) pueden consumir esos valores y procesarlos, o relizar filtros o transformaciones.
 
