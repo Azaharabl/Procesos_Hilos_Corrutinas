@@ -1,9 +1,7 @@
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.*
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.channels.Channel.Factory.toString
-import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.random.Random
@@ -22,11 +20,167 @@ suspend fun main(args: Array<String>) {
     println("\n \n ejercicio de un productor y varios cosumidores con canal 1-M")
     //canicasUnoAMuchosCanal()  //fan_out
 
+    println("\n \n ejercicio de un productor y varios cosumidores con canal 1-M usando produce")
+    //canicasUnoAMuchosProduce()
+
     println("\n \n ejercicio de varios productores y un consumidor con canal M-1")
     //canicasMuchosAUno()     //fan_in
 
+    println("\n \n ejercicio de varios productores y un consumidor con canal M-1 usando Actor")
+    canicasMuchosAUnoUsandoActor()
+
     println("\n \n Resolveremos con Chanel(10) M-M  hata que ya hayan cogido todas la canicas que querían")
    //canicasConChanelLimitado()
+}
+
+suspend fun canicasMuchosAUnoUsandoActor() {
+    println("familiares dan canicas, una niña las coje")
+    val miScope = CoroutineScope(Dispatchers.IO)
+    val canal = Channel<Canicas>(UNLIMITED)
+    var job = ArrayList<Job>()
+
+
+
+    //esto es lo unico que cambia, ya que usamos un actor
+    var lista1 = ArrayList<Canicas>()
+
+    println("lanzamos hija")
+    var actor = miScope.actor<Canicas> {
+        for (canicas in canal){
+            lista1.add(canicas)
+        }
+    }
+
+    println("lanzamos papa")
+    var papaMetio = 0
+    var mamaMetio = 0
+    var abueloMetio = 0
+    var abuelaMetio = 0
+
+
+    // Productor papa
+    job.add( miScope.launch {
+        repeat(10) {
+            val num = (1..10).random()
+            repeat(num) {canal.send(Canicas())}
+            println("Papa Metio $num canicas ")
+            papaMetio+=num
+        }
+    })
+    // Productor mama
+    job.add( miScope.launch {
+        repeat(10) {
+            val num = (1..10).random()
+            repeat(num) {canal.send(Canicas())}
+            println("Mama Metio $num canicas ")
+            mamaMetio+=num
+        }
+    })
+    // Productor abuela
+    job.add( miScope.launch {
+        repeat(10) {
+            val num = (1..10).random()
+            repeat(num) {canal.send(Canicas())}
+            println("abuelaMetio $num canicas ")
+            abuelaMetio+=num
+        }
+    })
+
+    // Productor abuelo
+    job.add( miScope.launch {
+        repeat(10) {
+            val num = (1..10).random()
+            repeat(num) {canal.send(Canicas())}
+            println("abuelo Metio $num canicas ")
+            abueloMetio+=num
+        }
+    })
+
+
+    // Sincronizar los trabajos
+    job.forEach{ it.join()}
+    canal.close()
+
+
+
+
+    println("Al final papa da : $papaMetio, mama da : $mamaMetio, la abuela da : $abuelaMetio, y el abuelo $abueloMetio")
+    println("hija recive : ${lista1.size} $lista1")
+
+}
+
+suspend fun canicasUnoAMuchosProduce() {
+
+    val miScope = CoroutineScope(Dispatchers.IO)
+    var job = ArrayList<Job>()
+    var papaMetio = 0
+
+    // El canal se crea desde el producer
+    println("lanzamos padre")
+    val canal = miScope.produce {//es igual que antes pero lo producte un productor
+        repeat(10) {
+            val num = (1..10).random()
+            repeat(num) { send(Canicas()) }
+            println("Papa Metio $num canicas ")
+            papaMetio+=num
+        }
+        println("Papa se canso de meter canicas, se va a dormir")
+    }
+
+
+
+    var lista1 = ArrayList<Canicas>()
+    var lista2 = ArrayList<Canicas>()
+    var lista3 = ArrayList<Canicas>()
+
+    println("lanzamos hijos")
+    // Consumidores hijos
+    job.add(miScope.launch {
+        var canalNOCerradoYVacio = true
+        while (canalNOCerradoYVacio){
+            try {
+                lista1.add( canal.receive())
+                println("Hijo1 recibió canica")
+            }catch (e: Exception){
+                canalNOCerradoYVacio = false
+            }
+        }
+    })
+
+    job.add( miScope.launch {
+        var canalNOCerradoYVacio = true
+        while (canalNOCerradoYVacio){
+            try {
+                lista2.add( canal.receive())
+                println("Hijo2 recibió canica")
+            }catch (e: Exception){
+                canalNOCerradoYVacio = false
+            }
+        }
+    })
+
+    job.add(miScope.launch {
+        var canalNOCerradoYVacio = true
+        while (canalNOCerradoYVacio){
+            try {
+                lista3.add( canal.receive())
+                println("Hijo3 recibió canica")
+            }catch (e: Exception){
+                canalNOCerradoYVacio = false
+            }
+        }
+    })
+
+
+    // Sincronizar los trabajos
+    job.forEach{ it.join()}
+
+
+    println("Al final papa da : $papaMetio el hijo1 recibió ${lista1.size} , el hijo2 recibió ${lista2.size} y el hijo3 recibió ${lista3.size}")
+    println("hijo 1 : ${lista1.size} $lista1")
+    println("hijo 2 : ${lista2.size} $lista2")
+    println("hijo 3 : ${lista3.size} $lista3")
+
 }
 
 suspend fun canicasConChanelLimitado() {
