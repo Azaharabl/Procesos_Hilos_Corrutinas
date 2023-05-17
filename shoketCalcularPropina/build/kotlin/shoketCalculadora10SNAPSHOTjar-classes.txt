@@ -1,0 +1,1 @@
+C:\Users\azaha\Desktop\shoketCalculadora\build\classes\kotlin\main\MainServerKt$mandarAlHilo$1.class;C:\Users\azaha\Desktop\shoketCalculadora\build\classes\kotlin\main\MainServerKt.class;C:\Users\azaha\Desktop\shoketCalculadora\build\classes\kotlin\main\MainclienteKt.class
